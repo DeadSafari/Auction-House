@@ -1,0 +1,5 @@
+name: Auction House
+description: Auction plugin containg Dark Auction
+author: DeadSafari
+api: 5.23.0
+main: DeadSafari\Auction\Main
