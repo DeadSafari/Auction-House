@@ -4,3 +4,8 @@ author: DeadSafari
 api: 5.23.0
 main: DeadSafari\Auction\Main
 version: 1.0.0
+
+permissions:
+  ah.use:
+    description: Allows the use of the /ah command.
+    default: true
