@@ -8,6 +8,7 @@ use Closure;
 use DeadSafari\Auction\Main;
 use poggit\libasynql\base\DataConnectorImpl;
 use poggit\libasynql\libasynql;
+use poggit\libasynql\result\SqlInsertResult;
 use poggit\libasynql\result\SqlSelectResult;
 use poggit\libasynql\SqlThread;
 
@@ -23,7 +24,7 @@ class DatabaseManager {
     private function initTables(): void {
         $this->db->executeImplRaw(
             [0 => "CREATE TABLE IF NOT EXISTS auction (_id INT AUTO_INCREMENT PRIMARY KEY, author VARCHAR(255) NOT NULL, expires INT(11), item INT NOT NULL)",
-            1 => "CREATE TABLE IF NOT EXISTS item (_id INT AUTO_INCREMENT PRIMARY KEY, data JSON NOT NULL)"],
+            1 => "CREATE TABLE IF NOT EXISTS item (_id INT AUTO_INCREMENT PRIMARY KEY, price INT NOT NULL, data JSON NOT NULL)"],
             [0 => [], 1 => []],
             [0 => SqlThread::MODE_GENERIC, 1 => SqlThread::MODE_GENERIC],
             function () {},
