@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace DeadSafari\Auction\Form;
 
+use DeadSafari\Auction\Main;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat as C;
+use pocketmine\utils\TextFormat;
 
 class AuctionHouseMenuForm {
 
@@ -17,7 +20,8 @@ class AuctionHouseMenuForm {
                 switch ($data) {
                     case 0:
                         return;
-
+                    case 1:
+                        AuctionHouseSellMenuForm::send($player);
                     case null:
                         return;
                 }
