@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace DeadSafari\Auction\Database;
 
+use Closure;
 use DeadSafari\Auction\Main;
 use poggit\libasynql\base\DataConnectorImpl;
 use poggit\libasynql\libasynql;
+use poggit\libasynql\result\SqlSelectResult;
 use poggit\libasynql\SqlThread;
 
 class DatabaseManager {
@@ -25,6 +27,16 @@ class DatabaseManager {
             [0 => [], 1 => []],
             [0 => SqlThread::MODE_GENERIC, 1 => SqlThread::MODE_GENERIC],
             function () {},
+            null
+        );
+    }
+
+    public function getAuctions(Closure $closure): void {
+        $this->db->executeImplRaw(
+            [0 => "SELECT * FROM auction;"],
+            [0 => []],
+            [0 => SqlThread::MODE_SELECT],
+            $closure,
             null
         );
     }
