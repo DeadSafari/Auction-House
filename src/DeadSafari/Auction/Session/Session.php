@@ -15,6 +15,7 @@ class Session {
 
     public function __construct(Player $player) {
         $this->player = $player;
+        $this->money = 0;
     }
 
     public function getMoney(): int {
@@ -28,7 +29,7 @@ class Session {
                 /** @var SqlSelectResult */
                 $result = $results[0];
                 $rows = $result->getRows();
-                print_r($rows);
+                $this->setMoney($rows[0]["money"]);
             }
         );
     }
