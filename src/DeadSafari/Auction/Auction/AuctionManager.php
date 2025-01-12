@@ -80,5 +80,7 @@ class AuctionManager {
 
     public function sell(Item $item, int $price, Session $session): void {
         $session->getPlayer()->getInventory()->removeItem($item);
+        $itemData = $this->parseItem($item);
+        Main::getInstance()->getDatabaseManager()->createAuction($session->getPlayer()->getXuid(), -1, $itemData, $price);
     }
 }
