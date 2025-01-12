@@ -28,6 +28,11 @@ class AuctionManager {
         $this->fetchAndParse();
     }
 
+    /** @return Auction[] */
+    public function getAuctions(): array {
+        return $this->auctions;
+    }
+
     private function fetchAndParse(): void {
         Main::getInstance()->getDatabaseManager()->getAuctions(
             /** @param SqlSelectResult[] */
@@ -41,7 +46,7 @@ class AuctionManager {
                         function (array $results) use($row) {
                             $dataStr = $results[0]->getRows()[0]["data"];
                             $data = json_decode($dataStr, true);
-                            $auction = new Auction($row["author"], $row["expires"], $data);
+                            $auction = new Auction($row["_id"], $row["author"], $row["expires"], $results[0]->getRows()[0]["price"], $data);
                             $this->addAuction($auction);
                         }
                     );
