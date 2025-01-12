@@ -31,5 +31,7 @@ class AuctionHouseSellCommand extends BaseSubCommand {
 
         $session = Main::getInstance()->getSessionManager()->getSession($sender);
         Main::getInstance()->getAuctionManager()->sell($sender->getInventory()->getItemInHand(), $args["Price"], $session);
+
+        $sender->sendMessage(TextFormat::GREEN . "Your item is now successfully on the auction");
     }
 }
