@@ -10,14 +10,16 @@ use pocketmine\item\Item;
 class Auction {
 
     private int $id;
+    private int $itemId;
     private string $author;
     private int $expiry;
     private int $price;
     private array $rawData;
     private Item $item;
 
-    public function __construct(int $id, string $author, int $expiry, int $price, array $rawData) {
+    public function __construct(int $id, int $itemId, string $author, int $expiry, int $price, array $rawData) {
         $this->id = $id;
+        $this->itemId = $itemId;
         $this->author = $author;
         $this->expiry = $expiry;
         $this->price = $price;
@@ -27,6 +29,10 @@ class Auction {
 
     public function getId(): int {
         return $this->id;
+    }
+
+    public function getItemId(): int {
+        return $this->itemId;
     }
 
     public function getAuthor(): string {
