@@ -10,6 +10,7 @@ use DeadSafari\Auction\Commands\AuctionHouseCommand;
 use DeadSafari\Auction\Database\DatabaseManager;
 use DeadSafari\Auction\Session\SessionListener;
 use DeadSafari\Auction\Session\SessionManager;
+use muqsit\invmenu\InvMenuHandler;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -33,6 +34,10 @@ class Main extends PluginBase {
 
         if (!PacketHooker::isRegistered()) {
             PacketHooker::register($this);
+        }
+
+        if (!InvMenuHandler::isRegistered()) {
+            InvMenuHandler::register($this);
         }
         $this->databaseManager = new DatabaseManager();
         $this->sessionManager = new SessionManager();
