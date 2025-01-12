@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DeadSafari\Auction\Session;
 
+use DeadSafari\Auction\Main;
 use pocketmine\player\Player;
 
 class SessionManager {
@@ -18,6 +19,7 @@ class SessionManager {
     public function createSession(Player $player): Session {
         $session = new Session($player);
         $this->sessions[] = $session;
+        Main::getInstance()->getDatabaseManager()->createPlayer($player);
         return $session;
     }
 

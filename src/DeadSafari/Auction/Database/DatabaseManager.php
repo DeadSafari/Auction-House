@@ -6,6 +6,7 @@ namespace DeadSafari\Auction\Database;
 
 use Closure;
 use DeadSafari\Auction\Main;
+use pocketmine\player\Player;
 use poggit\libasynql\base\DataConnectorImpl;
 use poggit\libasynql\libasynql;
 use poggit\libasynql\result\SqlInsertResult;
@@ -25,7 +26,7 @@ class DatabaseManager {
         $this->db->executeImplRaw(
             [0 => "CREATE TABLE IF NOT EXISTS auction (_id INT AUTO_INCREMENT PRIMARY KEY, author VARCHAR(255) NOT NULL, expires INT(11), item INT NOT NULL)",
             1 => "CREATE TABLE IF NOT EXISTS item (_id INT AUTO_INCREMENT PRIMARY KEY, price INT NOT NULL, data JSON NOT NULL)",
-            2 => "CREATE TABLE IF NOT EXISTS player (xuid VARCHAR(255) PRIMARY KEY NOT NULL, money INT DEFAULT 10000000"],
+            2 => "CREATE TABLE IF NOT EXISTS player (xuid VARCHAR(255) PRIMARY KEY NOT NULL, money INT DEFAULT 10000000)"],
             [0 => [], 1 => [], 2 => []],
             [0 => SqlThread::MODE_GENERIC, 1 => SqlThread::MODE_GENERIC, 2 => SqlThread::MODE_GENERIC],
             function () {},
@@ -50,6 +51,36 @@ class DatabaseManager {
                     null
                 );
             },
+            null
+        );
+    }
+
+    public function createPlayer(Player $player): void {
+        $this->db->executeImplRaw(
+            [0 => "INSERT IGNORE INTO player (xuid) VALUES (?)"],
+            [0 => [$player->getXuid()]],
+            [0 => SqlThread::MODE_INSERT],
+            function () {},
+            null
+        );
+    }
+
+    public function getPlayerMoney(string $xuid, Closure $callback): void {
+        $this->db->executeImplRaw(
+            [0 => "SELECT * FROM player WHERE xuid = ?"],
+            [0 => [$xuid]],
+            [0 => SqlThread::MODE_SELECT],
+            $callback,
+            null
+        );
+    }
+
+    public function getItemById(int $itemId, Closure $callback): void {
+        $this->db->executeImplRaw(
+            [0 => "SELECT * FROM item WHERE _id = ?"],
+            [0 => [$itemId]],
+            [0 => SqlThread::MODE_SELECT],
+            $callback,
             null
         );
     }
