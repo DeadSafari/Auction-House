@@ -24,9 +24,10 @@ class DatabaseManager {
     private function initTables(): void {
         $this->db->executeImplRaw(
             [0 => "CREATE TABLE IF NOT EXISTS auction (_id INT AUTO_INCREMENT PRIMARY KEY, author VARCHAR(255) NOT NULL, expires INT(11), item INT NOT NULL)",
-            1 => "CREATE TABLE IF NOT EXISTS item (_id INT AUTO_INCREMENT PRIMARY KEY, price INT NOT NULL, data JSON NOT NULL)"],
-            [0 => [], 1 => []],
-            [0 => SqlThread::MODE_GENERIC, 1 => SqlThread::MODE_GENERIC],
+            1 => "CREATE TABLE IF NOT EXISTS item (_id INT AUTO_INCREMENT PRIMARY KEY, price INT NOT NULL, data JSON NOT NULL)",
+            2 => "CREATE TABLE IF NOT EXISTS player (xuid VARCHAR(255) PRIMARY KEY NOT NULL, money INT DEFAULT 10000000"],
+            [0 => [], 1 => [], 2 => []],
+            [0 => SqlThread::MODE_GENERIC, 1 => SqlThread::MODE_GENERIC, 2 => SqlThread::MODE_GENERIC],
             function () {},
             null
         );
