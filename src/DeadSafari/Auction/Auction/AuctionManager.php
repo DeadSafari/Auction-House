@@ -16,12 +16,13 @@ use pocketmine\block\Wool;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\utils\TextFormat as C;
+use pocketmine\utils\TextFormat;
 use poggit\libasynql\result\SqlSelectResult;
 
 class AuctionManager {
 
     /** @var Auction[] */
-    private array $items;
+    private array $auctions = [];
 
     public function __construct() {
         $this->fetchAndParse();
@@ -30,11 +31,29 @@ class AuctionManager {
     private function fetchAndParse(): void {
         Main::getInstance()->getDatabaseManager()->getAuctions(
             /** @param SqlSelectResult[] */
-            function (array $rows): void {
-                //TODO:
+            function (array $results): void {
+                $rows = $results[0]->getRows();
+                foreach ($rows as $row) {
+                    $itemId = $row["item"];
+
+                    Main::getInstance()->getDatabaseManager()->getItemById(
+                        $itemId,
+                        function (array $results) use($row) {
+                            $dataStr = $results[0]->getRows()[0]["data"];
+                            $data = json_decode($dataStr, true);
+                            $auction = new Auction($row["author"], $row["expires"], $data);
+                            $this->addAuction($auction);
+                        }
+                    );
+                }
                 return;
             }
         );
+    }
+
+    public function addAuction(Auction $auction): void {
+        // Main::getInstance()->getServer()->getLogger()->info(TextFormat::DARK_PURPLE . "LOADED AUCTION OF " . $auction->getRawData()["aliases"][0]);
+        $this->auctions[] = $auction;
     }
 
     public function parseItem(Item $item): array {
