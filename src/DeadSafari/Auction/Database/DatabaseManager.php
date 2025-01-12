@@ -85,6 +85,26 @@ class DatabaseManager {
         );
     }
 
+    public function removeAuction(int $auctionId): void {
+        $this->db->executeImplRaw(
+            [0 => "DELETE FROM auction WHERE _id = ?"],
+            [0 => [$auctionId]],
+            [0 => SqlThread::MODE_CHANGE],
+            function () {},
+            null
+        );
+    }
+
+    public function removeItem(int $itemId): void {
+        $this->db->executeImplRaw(
+            [0 => "DELETE FROM item WHERE _id = ?"],
+            [0 => [$itemId]],
+            [0 => SqlThread::MODE_CHANGE],
+            function () {},
+            null
+        );
+    }
+
     public function getAuctions(Closure $closure): void {
         $this->db->executeImplRaw(
             [0 => "SELECT * FROM auction;"],

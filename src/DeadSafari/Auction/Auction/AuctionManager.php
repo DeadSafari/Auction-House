@@ -46,7 +46,7 @@ class AuctionManager {
                         function (array $results) use($row) {
                             $dataStr = $results[0]->getRows()[0]["data"];
                             $data = json_decode($dataStr, true);
-                            $auction = new Auction($row["_id"], $row["author"], $row["expires"], $results[0]->getRows()[0]["price"], $data);
+                            $auction = new Auction($row["_id"], $row["item"], $row["author"], $row["expires"], $results[0]->getRows()[0]["price"], $data);
                             $this->addAuction($auction);
                         }
                     );
@@ -59,6 +59,13 @@ class AuctionManager {
     public function addAuction(Auction $auction): void {
         // Main::getInstance()->getServer()->getLogger()->info(TextFormat::DARK_PURPLE . "LOADED AUCTION OF " . $auction->getRawData()["aliases"][0]);
         $this->auctions[] = $auction;
+    }
+
+    public function removeAuction(Auction $auction): void {
+        unset($this->auctions[array_search($auction, $this->auctions)]);
+
+        Main::getInstance()->getDatabaseManager()->removeAuction($auction->getId());
+        Main::getInstance()->getDatabaseManager()->removeItem($auction->getItemId());
     }
 
     public function parseItem(Item $item): array {
