@@ -19,9 +19,11 @@ class AuctionHouseMenuForm {
             function (Player $player, ?int $data) {
                 switch ($data) {
                     case 0:
+                        AuctionHouseBrowsingForm::send($player);
                         return;
                     case 1:
                         AuctionHouseSellMenuForm::send($player);
+                        return;
                     case null:
                         return;
                 }
