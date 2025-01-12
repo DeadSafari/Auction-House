@@ -10,6 +10,7 @@ use DeadSafari\Auction\Main;
 use pocketmine\command\CommandSender;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 
 class AuctionHouseSellCommand extends BaseSubCommand {
 
@@ -24,6 +25,7 @@ class AuctionHouseSellCommand extends BaseSubCommand {
         }
 
         if ($sender->getInventory()->getItemInHand()->getTypeId() === VanillaItems::AIR()->getTypeId()) {
+            $sender->sendMessage(TextFormat::RED . "You you have to hold the item which you are trying to sell!");
             return;
         }
 
