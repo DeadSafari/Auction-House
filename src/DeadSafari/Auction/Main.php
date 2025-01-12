@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace DeadSafari\Auction;
 
 use CortexPE\Commando\PacketHooker;
+use DeadSafari\Auction\Auction\AuctionManager;
+use DeadSafari\Auction\Commands\AuctionHouseCommand;
 use DeadSafari\Auction\Database\DatabaseManager;
 use DeadSafari\Auction\Session\SessionListener;
 use DeadSafari\Auction\Session\SessionManager;
+use pocketmine\item\Durable;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\VanillaItems;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat as C;
 
@@ -15,6 +21,7 @@ class Main extends PluginBase {
 
     private DatabaseManager $databaseManager;
     private SessionManager $sessionManager;
+    private AuctionManager $auctionManager;
     private static self $instance;
 
     public function onLoad(): void {
@@ -29,7 +36,9 @@ class Main extends PluginBase {
         }
         $this->databaseManager = new DatabaseManager();
         $this->sessionManager = new SessionManager();
+        $this->auctionManager = new AuctionManager();
         $this->registerEvents();
+        $this->registerCommands();
         $this->getLogger()->info(C::GREEN . "Auction House is now enabled.");
     }
 
@@ -41,6 +50,10 @@ class Main extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new SessionListener(), $this);
     }
 
+    public function registerCommands(): void {
+        $this->getServer()->getCommandMap()->register("ah", new AuctionHouseCommand($this, "ah", "Auction House commands", ["auction", "auction-house"]));
+    }
+
 
     public function getSessionManager(): SessionManager {
         return $this->sessionManager;
@@ -48,6 +61,10 @@ class Main extends PluginBase {
 
     public function getDatabaseManager(): DatabaseManager {
         return $this->databaseManager;
+    }
+
+    public function getAuctionManager(): AuctionManager {
+        return $this->auctionManager;
     }
 
     public static function getInstance(): self {
