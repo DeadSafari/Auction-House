@@ -25,6 +25,14 @@ class Auction {
         $this->price = $price;
         $this->rawData = $rawData;
         $this->item = Main::getInstance()->getAuctionManager()->assembleItem($rawData);
+
+        $time = time();
+        if ($time <= ($time - $expiry)) {
+            Main::getInstance()->getScheduler()->scheduleDelayedTask(new AuctionExpiredTask($this), 1);
+            return;
+        }
+        Main::getInstance()->getScheduler()->scheduleDelayedTask(new AuctionExpiredTask($this), ($time - $expiry) * 20);
+
     }
 
     public function getId(): int {
