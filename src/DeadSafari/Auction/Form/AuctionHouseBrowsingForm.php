@@ -58,26 +58,10 @@ class AuctionHouseBrowsingForm {
                     if ($transaction->getItemClicked()->getCustomBlockData()->getByte("yes") === 1) {
                         $player->removeCurrentWindow();
                         $session = Main::getInstance()->getSessionManager()->getSession($player);
-                        if ($session->getMoney() < ($auction->getPrice())) {
-                            $player->sendMessage(TextFormat::RED . "You do not have enough money to buy this!");
-                            return $transaction->discard();
-                        }
-
-                        $session->setMoney($session->getMoney() - $auction->getPrice());
-
-                        $claimMenu = InvMenu::create(InvMenu::TYPE_CHEST);
-                        $claimMenu->getInventory()->setItem(13, $auction->getItem());
-                        $claimMenu->send($player);
-                        Main::getInstance()->getAuctionManager()->removeAuction($auction);
+                        Main::getInstance()->getAuctionManager()->buy($auction, $session);
                         return $transaction->discard();
-
                     }
-                    elseif ($transaction->getItemClicked()->getCustomBlockData()->getByte("yes") === 0) {
-                        $player->removeCurrentWindow();
-                    }
-                    if ($transaction->getItemClicked()->getTypeId() === VanillaBlocks::BED()->asItem()->getTypeId()) {
-                        $player->removeCurrentWindow();
-                    }
+                    $player->removeCurrentWindow();
                     return $transaction->discard();
                 });
 

@@ -8,13 +8,16 @@ use DeadSafari\Auction\Main;
 use DeadSafari\Auction\Session\Session;
 use Error;
 use Exception;
+use muqsit\invmenu\InvMenu;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\Wool;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat as C;
 use pocketmine\utils\TextFormat;
 use poggit\libasynql\result\SqlSelectResult;
@@ -109,9 +112,50 @@ class AuctionManager {
         return $item;
     }
 
+    public function buy(Auction $auction, Session $session): void {
+
+        // ! Change this to fit your money plugin
+
+        if ($session->getMoney() < ($auction->getPrice())) {
+            $session->getPlayer()->sendMessage(TextFormat::RED . "You do not have enough money to buy this!");
+            return;
+        }
+
+        $session->setMoney($session->getMoney() - $auction->getPrice());
+
+        $claimMenu = InvMenu::create(InvMenu::TYPE_CHEST);
+        $claimMenu->getInventory()->setItem(13, $auction->getItem());
+        $claimMenu->setInventoryCloseListener(
+            function (Player $player, Inventory $inventory) use($auction): void {
+                if (empty($inventory->getContents())) {
+                    Main::getInstance()->getAuctionManager()->removeAuction($auction);
+                    Main::getInstance()->getDatabaseManager()->getPlayerMoney(
+                        $auction->getAuthor(),
+                        function (array $result) use($auction): void {
+                            $prevMoney = $result[0]->getRows()[0]["money"];
+                            $newMoney = $auction->getPrice() + $prevMoney;
+
+                            Main::getInstance()->getDatabaseManager()->setPlayerMoney($auction->getAuthor(), $newMoney);
+                        }
+                    );
+                    $player->sendMessage(TextFormat::GREEN . "You purchased " . TextFormat::RESET . TextFormat::GOLD . $auction->getItem()->getName() . TextFormat::RESET . TextFormat::GREEN . " for " . strval($auction->getPrice()) . "!");
+                    return;
+                }
+            }
+        );
+        $claimMenu->send($session->getPlayer());
+    }
+
+    public function incrementAuctionManually(Auction $auction): void {
+        $this->auctions[] = $auction;
+    }
+
     public function sell(Item $item, int $price, Session $session): void {
         $session->getPlayer()->getInventory()->removeItem($item);
         $itemData = $this->parseItem($item);
-        Main::getInstance()->getDatabaseManager()->createAuction($session->getPlayer()->getXuid(), -1, $itemData, $price);
+        $time = time();
+        // add seconds worth of 2 days
+        $time += 172800;
+        Main::getInstance()->getDatabaseManager()->createAuction($session->getPlayer()->getXuid(), $time, $itemData, $price);
     }
 }
