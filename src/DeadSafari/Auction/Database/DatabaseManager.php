@@ -51,7 +51,7 @@ class DatabaseManager {
                     function (array $results_) use($id, $author_xuid, $expiry, $itemData, $price){
                         $results_[0]->getInsertId();
                         $auction = new Auction($id, $results_[0]->getInsertId(), $author_xuid, $expiry, $price, $itemData);
-                        Main::getInstance()->getAuctionManager()->incrementAuctionManually($auction);
+                        Main::getInstance()->getAuctionManager()->addAuction($auction);
                     },
                     null
                 );

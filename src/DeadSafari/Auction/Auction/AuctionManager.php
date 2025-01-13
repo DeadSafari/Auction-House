@@ -146,9 +146,6 @@ class AuctionManager {
         $claimMenu->send($session->getPlayer());
     }
 
-    public function incrementAuctionManually(Auction $auction): void {
-        $this->auctions[] = $auction;
-    }
 
     public function sell(Item $item, int $price, Session $session): void {
         $session->getPlayer()->getInventory()->removeItem($item);
