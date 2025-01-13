@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DeadSafari\Auction\Database;
 
 use Closure;
+use DeadSafari\Auction\Auction\Auction;
 use DeadSafari\Auction\Main;
 use pocketmine\player\Player;
 use poggit\libasynql\base\DataConnectorImpl;
@@ -40,14 +41,18 @@ class DatabaseManager {
             [0 => [$price, json_encode($itemData)]],
             [0 => SqlThread::MODE_INSERT],
             /** @param $results SqlInsertResult[] */
-            function (array $results) use($author_xuid, $expiry): void {
-                $results[0]->getInsertId();
+            function (array $results) use($author_xuid, $expiry, $itemData, $price): void {
+                $id = $results[0]->getInsertId();
 
                 $this->db->executeImplRaw(
                     [0 => "INSERT INTO auction (author, expires, item) VALUES (?, ?, ?)"],
-                    [0 => [$author_xuid, $expiry, $results[0]->getInsertId()]],
+                    [0 => [$author_xuid, $expiry, $id]],
                     [0 => SqlThread::MODE_INSERT],
-                    function (array $results_) {},
+                    function (array $results_) use($id, $author_xuid, $expiry, $itemData, $price){
+                        $results_[0]->getInsertId();
+                        $auction = new Auction($id, $results_[0]->getInsertId(), $author_xuid, $expiry, $price, $itemData);
+                        Main::getInstance()->getAuctionManager()->incrementAuctionManually($auction);
+                    },
                     null
                 );
             },
@@ -71,6 +76,16 @@ class DatabaseManager {
             [0 => [$xuid]],
             [0 => SqlThread::MODE_SELECT],
             $callback,
+            null
+        );
+    }
+
+    public function setPlayerMoney(string $xuid, int $money): void {
+        $this->db->executeImplRaw(
+            [0 => "UPDATE player SET money = ? WHERE xuid = ?"],
+            [0 => [$money, $xuid]],
+            [0 => SqlThread::MODE_CHANGE],
+            function () {},
             null
         );
     }
