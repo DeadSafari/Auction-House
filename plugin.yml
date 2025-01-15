@@ -12,3 +12,6 @@ permissions:
   ah.sell.use:
     description: Allows the use of the /ah sell command.
     default: true
+  bah.use:
+    description: Allows the use of /bah command.
+    default: true
