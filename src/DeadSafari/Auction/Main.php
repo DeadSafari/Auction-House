@@ -6,6 +6,7 @@ namespace DeadSafari\Auction;
 
 use CortexPE\Commando\PacketHooker;
 use DeadSafari\Auction\Auction\AuctionManager;
+use DeadSafari\Auction\BlackAuction\BlackAuctionManager;
 use DeadSafari\Auction\Commands\AuctionHouseCommand;
 use DeadSafari\Auction\Database\DatabaseManager;
 use DeadSafari\Auction\Session\SessionListener;
@@ -23,6 +24,7 @@ class Main extends PluginBase {
     private DatabaseManager $databaseManager;
     private SessionManager $sessionManager;
     private AuctionManager $auctionManager;
+    private BlackAuctionManager $blackAuctionManager;
     private static self $instance;
 
     public function onLoad(): void {
@@ -42,6 +44,7 @@ class Main extends PluginBase {
         $this->databaseManager = new DatabaseManager();
         $this->sessionManager = new SessionManager();
         $this->auctionManager = new AuctionManager();
+        $this->blackAuctionManager = new BlackAuctionManager();
         $this->registerEvents();
         $this->registerCommands();
         $this->getLogger()->info(C::GREEN . "Auction House is now enabled.");
@@ -70,6 +73,10 @@ class Main extends PluginBase {
 
     public function getAuctionManager(): AuctionManager {
         return $this->auctionManager;
+    }
+
+    public function getBlackAuctionManager(): BlackAuctionManager {
+        return $this->blackAuctionManager;
     }
 
     public static function getInstance(): self {
